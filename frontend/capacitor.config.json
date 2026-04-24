@@ -1,0 +1,9 @@
+{
+  "appId": "ai.byronz.app",
+  "appName": "Byronz",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="byronzTitle byronzDesc">
+  <title id="byronzTitle">Byronz Identity</title>
+  <desc id="byronzDesc">Gradient Byronz monogram icon.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7fb2ff"/>
+      <stop offset="52%" stop-color="#3d7bff"/>
+      <stop offset="100%" stop-color="#173eaa"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#dce8ff" stop-opacity="0.7"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="24" stdDeviation="24" flood-color="#13316f" flood-opacity="0.24"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="132" fill="#ffffff"/>
+  <rect x="28" y="28" width="456" height="456" rx="116" fill="url(#bg)" filter="url(#shadow)"/>
+  <circle cx="168" cy="132" r="96" fill="url(#glow)" opacity="0.14"/>
+  <path d="M151 122h111c46 0 75 24 75 62 0 25-14 43-38 52 32 8 52 30 52 61 0 48-35 81-95 81H151V122Zm92 93c20 0 32-9 32-24 0-14-11-22-32-22h-29v46h29Zm11 113c26 0 40-10 40-28 0-18-14-28-40-28h-40v56h40Z" fill="#ffffff"/>
+  <path d="M206 145h95c39 0 64 20 64 52 0 23-13 38-37 46 30 7 50 27 50 58 0 44-34 74-88 74h-84V145Zm77 88c18 0 29-7 29-21 0-13-10-19-29-19h-22v40h22Zm9 94c22 0 34-9 34-25 0-16-12-24-34-24h-31v49h31Z" fill="#ffffff" opacity="0.25"/>
+</svg>

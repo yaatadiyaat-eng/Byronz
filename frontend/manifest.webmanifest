@@ -1,0 +1,26 @@
+{
+  "name": "Byronz AI Workspace",
+  "short_name": "Byronz",
+  "description": "AI workspace premium untuk chat, code, bisnis, creative, vision, dan research.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#020812",
+  "theme_color": "#1f63f2",
+  "lang": "id",
+  "icons": [
+    {
+      "src": "./assets/byronz-identity.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/byronz-identity.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

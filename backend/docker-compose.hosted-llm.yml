@@ -1,0 +1,26 @@
+services:
+  byronz-api:
+    build: .
+    container_name: byronz-api
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - byronz_data:/var/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import json, urllib.request; payload=json.loads(urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5).read().decode('utf-8')); raise SystemExit(0 if payload.get('status') == 'ok' else 1)"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  byronz_data:

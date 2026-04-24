@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Byronz AI Workspace</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1f63f2">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Byronz">
+  <meta name="byronz-api-base" content="">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/byronz-identity.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/byronz-identity.svg">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <main id="mainPanel" class="main-panel">
+      <button id="menuBackdrop" class="menu-backdrop" type="button" aria-label="Tutup panel"></button>
+
+      <aside id="commandMenu" class="overlay-panel command-panel" aria-hidden="true">
+        <div class="panel-glow"></div>
+
+        <div class="panel-header">
+          <div>
+            <p id="commandMenuLabel" class="panel-label">Conversation vault</p>
+            <h2 id="commandMenuTitle">Chat Control</h2>
+            <p id="commandMenuCaption" class="panel-caption">Riwayat percakapan Byronz tersimpan rapi di sini.</p>
+          </div>
+          <button id="closeMenuBtn" class="icon-btn" type="button" aria-label="Tutup chat control">x</button>
+        </div>
+
+        <div class="panel-actions">
+          <button id="newChatBtn" class="primary-btn" type="button">+ New Chat</button>
+          <button id="exportBtn" class="ghost-btn" type="button">Export Chat</button>
+        </div>
+
+        <section class="vault-card">
+          <div class="vault-head">
+            <div>
+              <p class="panel-label">Vault</p>
+              <h3 id="historyTitle">History Chat</h3>
+            </div>
+            <span id="chatCount" class="count-pill">0</span>
+          </div>
+
+          <label class="search-shell" for="historySearch">
+            <span id="historySearchLabel">Search history</span>
+            <input id="historySearch" type="text" placeholder="Cari percakapan..." autocomplete="off">
+          </label>
+
+          <div id="chatList" class="chat-list"></div>
+        </section>
+      </aside>
+
+      <aside id="brandMenu" class="overlay-panel settings-panel" aria-hidden="true">
+        <div class="panel-glow settings-glow"></div>
+
+        <div class="settings-header">
+          <div>
+            <p id="settingsMenuLabel" class="panel-label">Byronz workspace</p>
+            <h2 id="settingsMenuTitle">Offline Settings</h2>
+            <p id="settingsMenuCaption" class="panel-caption">Pengaturan inti Byronz untuk penggunaan offline yang ringkas.</p>
+          </div>
+          <button id="closeBrandMenuBtn" class="icon-btn" type="button" aria-label="Tutup settings">x</button>
+        </div>
+
+        <div class="settings-grid">
+          <section class="settings-card">
+            <h3 id="profileTitle">Profile</h3>
+            <div class="settings-field">
+              <label id="displayNameLabel" for="profileNameInput">Display Name</label>
+              <input id="profileNameInput" class="settings-input" type="text" placeholder="Nama pengguna">
+            </div>
+            <div class="settings-field">
+              <label id="languageLabel" for="languageSelect">Language</label>
+              <select id="languageSelect" class="settings-select">
+                <option value="auto">Auto Detect</option>
+                <option value="indonesian">Bahasa Indonesia</option>
+                <option value="english">English</option>
+              </select>
+            </div>
+          </section>
+
+          <section class="settings-card">
+            <h3 id="themeTitle">Theme</h3>
+            <div class="segment-control" aria-label="Theme preferences">
+              <button class="segment-btn" type="button" data-theme-pref="light">Light</button>
+              <button class="segment-btn active" type="button" data-theme-pref="dark">Dark</button>
+            </div>
+            <div class="settings-field settings-inline">
+              <label id="currentThemeLabel">Current Theme</label>
+              <span id="settingsThemePreview" class="badge-pill">Dark</span>
+            </div>
+          </section>
+
+          <section class="settings-card">
+            <h3 id="layoutTitle">Layout Density</h3>
+            <div class="segment-control" aria-label="Layout density">
+              <button class="segment-btn active" type="button" data-density="comfortable">Comfortable</button>
+              <button class="segment-btn" type="button" data-density="compact">Compact</button>
+              <button class="segment-btn" type="button" data-density="minimal">Minimal</button>
+            </div>
+            <p id="layoutNote" class="settings-note">Agar tampilan tetap muat rapi di satu frame.</p>
+          </section>
+
+          <section class="settings-card">
+            <h3 id="responseStyleTitle">Response Style</h3>
+            <div class="style-scale">
+              <span id="styleLabelCasual" class="style-label">Casual</span>
+              <span id="styleLabelBalanced" class="style-label active">Balanced</span>
+              <span id="styleLabelFormal" class="style-label">Formal</span>
+            </div>
+            <input id="responseStyleRange" class="style-range" type="range" min="0" max="2" step="1" value="1">
+            <p id="responseStyleDescription" class="settings-note">Jawaban seimbang dan nyaman dibaca.</p>
+          </section>
+
+          <section class="settings-card">
+            <h3 id="historySettingsTitle">History</h3>
+            <button class="toggle-row" id="chatRetentionToggle" type="button" data-setting="chatRetention" aria-pressed="true">
+              <span>
+                <strong id="chatRetentionTitle">Chat Retention</strong>
+                <small id="chatRetentionDesc">Simpan histori chat secara lokal untuk dipakai kembali.</small>
+              </span>
+              <span class="toggle-switch on"><span></span></span>
+            </button>
+            <button id="clearHistoryBtn" class="soft-btn" type="button">Clear History</button>
+          </section>
+
+          <section class="settings-card">
+            <h3 id="behaviorTitle">Assistant Behavior</h3>
+            <div class="behavior-list" role="radiogroup" aria-label="Assistant behavior">
+              <button class="behavior-btn active" type="button" data-behavior="task_focused" aria-pressed="true">Task Focused</button>
+              <button class="behavior-btn" type="button" data-behavior="creative" aria-pressed="false">Creative</button>
+              <button class="behavior-btn" type="button" data-behavior="custom" aria-pressed="false">Custom Instructions</button>
+            </div>
+            <p id="behaviorNote" class="settings-note">Atur karakter jawaban Byronz dengan tampilan yang tetap bersih.</p>
+          </section>
+
+          <section class="settings-card">
+            <h3 id="appUpdateTitle">App Updates</h3>
+            <div class="settings-field settings-inline">
+              <label id="appUpdateVersionLabel">Versi Saat Ini</label>
+              <span id="appUpdateVersionValue" class="badge-pill">v1.2.0 (Build 120)</span>
+            </div>
+            <p id="appUpdateStatus" class="settings-note">Setelah rilis di Google Play, Byronz bisa cek update Android dari dalam aplikasi.</p>
+            <div class="update-actions">
+              <button id="appUpdateBtn" class="soft-btn" type="button">Periksa Update</button>
+            </div>
+          </section>
+
+          <section
+            id="creatorCardTrigger"
+            class="settings-card creator-card creator-card-button"
+            role="button"
+            tabindex="0"
+            aria-haspopup="dialog"
+            aria-controls="creatorModal"
+            aria-expanded="false"
+          >
+            <div class="creator-card-head">
+              <div>
+                <h3 id="creatorTitle">Creator</h3>
+                <p id="creatorCopy" class="creator-copy">Byronz adalah AI offline workspace untuk chat, code, creative, bisnis, dan riset.</p>
+              </div>
+              <span class="creator-card-arrow" aria-hidden="true">&#8250;</span>
+            </div>
+            <div class="creator-identity">
+              <span class="creator-badge">Creator</span>
+              <strong id="creatorName">Muhammad Adiyaat Alfathi</strong>
+            </div>
+            <p id="creatorOpenHint" class="creator-open-hint">Klik untuk melihat profil creator.</p>
+          </section>
+        </div>
+      </aside>
+
+      <div class="workspace-shell">
+        <div class="workspace-main">
+          <header class="topbar">
+            <button id="brandDockBtn" class="brand-dock topbar-brand" type="button" aria-label="Buka panel Byronz" aria-controls="brandMenu" aria-expanded="false">
+              <span class="brand-mark">
+                <img class="brand-mark-image" src="assets/byronz-identity.svg" alt="Logo Byronz">
+              </span>
+              <span class="brand-dock-copy">
+                <strong>Byronz</strong>
+                <small id="brandDockSubtext">Offline AI</small>
+              </span>
+            </button>
+
+            <div class="topbar-main">
+              <p id="workspaceEyebrow" class="eyebrow">Offline AI Workspace</p>
+              <h1 id="workspaceTitle" class="workspace-title">Byronz</h1>
+              <p id="sessionStatus" class="session-status">Pilih mode, lalu mulai chat.</p>
+            </div>
+
+            <aside id="ambientWidget" class="ambient-widget ambient-widget-topbar" aria-live="polite">
+              <div class="ambient-widget-head">
+                <span id="ambientWidgetLabel" class="ambient-widget-label">Live</span>
+                <span id="ambientStatus" class="ambient-widget-status">Mengambil cuaca...</span>
+              </div>
+              <div class="ambient-widget-summary">
+                <div class="ambient-widget-primary">
+                  <div id="ambientTime" class="ambient-time">--:--:--</div>
+                  <div id="ambientDate" class="ambient-date">--</div>
+                </div>
+                <div class="ambient-widget-meta">
+                  <div class="ambient-meta-row">
+                    <span id="ambientLocationLabel" class="ambient-item-label">Lokasi</span>
+                    <strong id="ambientLocation" class="ambient-item-value">Memuat...</strong>
+                  </div>
+                  <div class="ambient-meta-row">
+                    <span id="ambientWeatherLabel" class="ambient-item-label">Cuaca</span>
+                    <strong id="ambientWeather" class="ambient-item-value">Mengambil data...</strong>
+                  </div>
+                  <div class="ambient-meta-row ambient-meta-row-temperature">
+                    <span id="ambientTemperatureLabel" class="ambient-item-label">Suhu</span>
+                    <strong id="ambientTemperature" class="ambient-temperature">--&deg;C</strong>
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            <div class="topbar-actions">
+              <div class="mode-switcher" aria-label="Byronz mode selection">
+                <button class="mode-chip active" type="button" data-mode="general" title="Smart">SMART</button>
+                <button class="mode-chip" type="button" data-mode="code" title="Code">CODE</button>
+                <button class="mode-chip" type="button" data-mode="english_tutor" title="English Tutor">EN</button>
+                <button class="mode-chip" type="button" data-mode="business" title="Business">BIZ</button>
+                <button class="mode-chip" type="button" data-mode="creative" title="Creative">CREATE</button>
+                <button class="mode-chip" type="button" data-mode="data_analysis" title="Data Analysis">DATA</button>
+                <button class="mode-chip" type="button" data-mode="chatbot" title="Chatbot">BOT</button>
+                <button class="mode-chip" type="button" data-mode="vision" title="Vision">VISION</button>
+                <button class="mode-chip" type="button" data-mode="automation" title="Automation">AUTO</button>
+                <button class="mode-chip" type="button" data-mode="researcher" title="Researcher">RESEARCH</button>
+              </div>
+
+              <div class="quick-controls">
+                <label class="model-picker" for="modelSelect">
+                  <span id="modelPickerLabel" class="model-picker-label">AI Model</span>
+                  <select id="modelSelect" class="model-select" aria-label="Pilih model AI">
+                    <option value="auto">Auto</option>
+                  </select>
+                </label>
+
+                <button id="toggleMode" class="theme-btn" type="button" aria-label="Ganti tema">
+                  <span id="themeIcon" class="theme-icon">&#9789;</span>
+                  <span id="themeLabel">Dark</span>
+                </button>
+
+                <button id="menuBtn" class="menu-btn" type="button" aria-label="Buka chat control" aria-controls="commandMenu" aria-expanded="false">
+                  <span class="menu-glyph">
+                    <span class="menu-dot"></span>
+                    <span class="menu-dot"></span>
+                    <span class="menu-dot"></span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </header>
+
+          <section class="chat-stage">
+            <div class="stage-backdrop backdrop-a"></div>
+            <div class="stage-backdrop backdrop-b"></div>
+
+            <div id="chatContainer" class="chat-container" role="log" aria-live="polite">
+              <section id="emptyState" class="dashboard-view">
+                <div class="dashboard-hero">
+                  <p id="emptyStateKicker" class="ambient-kicker">Byronz</p>
+                  <h2 id="emptyStateTitle">Mulai percakapan.</h2>
+                  <p id="emptyStateCopy">Dibuat oleh Muhammad Adiyaat Alfathi.</p>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <form id="composerForm" class="composer">
+            <div class="composer-shell">
+              <div class="composer-input">
+                <span id="inputKicker" class="input-kicker">Prompt</span>
+                <div id="attachmentTray" class="attachment-tray hidden" aria-live="polite"></div>
+                <div class="composer-entry">
+                  <button id="attachmentBtn" class="attachment-btn" type="button" aria-label="Tambahkan file atau gambar" title="Tambahkan file atau gambar">+</button>
+                  <button id="englishCallBtn" class="call-btn hidden" type="button" aria-label="Mulai English Call" aria-pressed="false">
+                    <span class="call-btn-signal" aria-hidden="true"></span>
+                    <span id="englishCallBtnLabel">Call</span>
+                  </button>
+                  <input id="fileInput" type="file" hidden multiple accept="image/*,.pdf,.txt,.md,.json,.csv,.tsv,.py,.js,.jsx,.ts,.tsx,.html,.css,.sql,.xml,.yml,.yaml,.log">
+                  <input type="text" id="userInput" placeholder="Tanyakan sesuatu ke Byronz..." autocomplete="off">
+                </div>
+              </div>
+              <button id="sendBtn" class="send-btn" type="submit">
+                <span class="send-btn-visual">
+                  <span class="send-svg-wrapper-1">
+                    <span class="send-svg-wrapper">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <path fill="none" d="M0 0h24v24H0z"></path>
+                        <path
+                          fill="currentColor"
+                          d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
+                        ></path>
+                      </svg>
+                    </span>
+                  </span>
+                  <span id="sendBtnLabel">Send</span>
+                </span>
+              </button>
+            </div>
+
+            <div class="composer-footer">
+              <span id="footerSummary">Mode: Smart | Style: Balanced | Theme: Dark</span>
+              <div class="composer-footer-right">
+                <span id="englishCallStatus" class="english-call-status hidden">English Call siap dipakai.</span>
+                <span id="modeHint">Byronz offline siap dipakai.</span>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="creatorModal" class="creator-modal hidden" aria-hidden="true">
+        <button id="creatorModalBackdrop" class="creator-modal-backdrop" type="button" aria-label="Tutup profil creator"></button>
+        <section class="creator-modal-panel" role="dialog" aria-modal="true" aria-labelledby="creatorModalTitle">
+          <button id="closeCreatorModalBtn" class="creator-modal-close" type="button" aria-label="Tutup profil creator">&times;</button>
+
+          <div class="creator-modal-hero">
+            <p id="creatorModalLabel" class="creator-modal-label">Creator</p>
+            <div class="creator-avatar-shell">
+              <span class="creator-avatar">
+                <img class="creator-avatar-image" src="assets/byronz-identity.svg" alt="Avatar creator Byronz">
+              </span>
+              <span class="creator-avatar-badge" aria-hidden="true">&#10003;</span>
+            </div>
+            <h2 id="creatorModalTitle" class="creator-modal-title">Muhammad Adiyaat Alfathi</h2>
+            <p id="creatorRolePill" class="creator-role-pill">App Creator / Developer</p>
+            <p id="creatorTagline" class="creator-tagline">"Membangun aplikasi yang modern, bermanfaat, dan mudah digunakan."</p>
+          </div>
+
+          <div class="creator-info-list">
+            <a class="creator-info-row" href="mailto:adiyaat.alfathi@gmail.com">
+              <span class="creator-info-icon">@</span>
+              <span class="creator-info-copy">
+                <span id="creatorEmailLabel" class="creator-info-label">Email</span>
+                <strong class="creator-info-value">adiyaat.alfathi@gmail.com</strong>
+              </span>
+              <span class="creator-info-arrow" aria-hidden="true">&#8250;</span>
+            </a>
+
+            <div class="creator-info-row">
+              <span class="creator-info-icon">UI</span>
+              <span class="creator-info-copy">
+                <span id="creatorFocusLabel" class="creator-info-label">Fokus Bidang</span>
+                <strong id="creatorFocusValue" class="creator-info-value">UI/UX Design - Python - Mobile App</strong>
+              </span>
+              <span class="creator-info-arrow" aria-hidden="true">&#8250;</span>
+            </div>
+
+            <div class="creator-info-row">
+              <span class="creator-info-icon">v</span>
+              <span class="creator-info-copy">
+                <span id="creatorVersionLabel" class="creator-info-label">Versi Aplikasi</span>
+                <strong id="creatorVersionValue" class="creator-info-value">v1.2.0 (Build 120)</strong>
+              </span>
+              <span class="creator-info-arrow" aria-hidden="true">&#8250;</span>
+            </div>
+          </div>
+
+          <div id="creatorPlatformSheet" class="creator-platform-sheet" aria-hidden="false">
+            <div class="creator-platform-header">
+              <div>
+                <h3 id="creatorPlatformTitle" class="creator-platform-title">Pilih Platform</h3>
+                <p id="creatorPlatformCaption" class="creator-platform-caption">Pilih platform untuk terhubung dengan creator</p>
+              </div>
+            </div>
+
+            <div class="creator-platform-grid">
+              <button class="creator-platform-card creator-platform-instagram" type="button" data-platform="instagram">
+                <span class="creator-platform-tooltip">
+                  <span class="creator-tooltip-profile">
+                    <span class="creator-tooltip-avatar">IG</span>
+                    <span class="creator-tooltip-meta">
+                      <strong>Instagram</strong>
+                      <small id="creatorPlatformInstagramTooltip">Update visual Byronz &amp; konten terbaru.</small>
+                    </span>
+                  </span>
+                </span>
+                <span class="creator-platform-layer">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span class="creator-platform-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.8A3.95 3.95 0 0 0 3.8 7.75v8.5A3.95 3.95 0 0 0 7.75 20.2h8.5a3.95 3.95 0 0 0 3.95-3.95v-8.5a3.95 3.95 0 0 0-3.95-3.95h-8.5Zm8.95 1.9a1.05 1.05 0 1 1 0 2.1 1.05 1.05 0 0 1 0-2.1ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.8a3.2 3.2 0 1 0 0 6.4 3.2 3.2 0 0 0 0-6.4Z"/>
+                    </svg>
+                  </span>
+                </span>
+                <span class="creator-platform-body">
+                  <strong>Instagram</strong>
+                  <small id="creatorPlatformInstagramDesc">Lihat profil dan konten terbaru</small>
+                </span>
+                <span class="creator-platform-arrow" aria-hidden="true">&#8250;</span>
+              </button>
+
+              <button class="creator-platform-card creator-platform-whatsapp" type="button" data-platform="whatsapp">
+                <span class="creator-platform-tooltip">
+                  <span class="creator-tooltip-profile">
+                    <span class="creator-tooltip-avatar">WA</span>
+                    <span class="creator-tooltip-meta">
+                      <strong>WhatsApp</strong>
+                      <small id="creatorPlatformWhatsappTooltip">Channel tercepat untuk percakapan langsung.</small>
+                    </span>
+                  </span>
+                </span>
+                <span class="creator-platform-layer">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span class="creator-platform-icon" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" aria-hidden="true">
+                      <path d="M26.7 5.3A13.3 13.3 0 0 0 4.8 20.8L3 29l8.4-1.7A13.3 13.3 0 1 0 26.7 5.3ZM16 27a10.8 10.8 0 0 1-5.5-1.5l-.4-.2-4.9 1 1-4.7-.3-.5A10.8 10.8 0 1 1 16 27Zm6-8c-.3-.2-1.9-1-2.2-1.1-.3-.1-.5-.2-.7.2s-.8 1.1-1 1.3c-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-1-1.7-2.1-1.9-2.5-.2-.3 0-.5.2-.7l.5-.6c.2-.2.3-.4.4-.6.1-.2 0-.4 0-.6 0-.2-.7-1.8-1-2.4-.2-.5-.5-.4-.7-.4h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.2 1.4 3.4c.2.2 2.3 3.6 5.6 5 .8.4 1.5.6 2 .8.8.2 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.6.3-.8.3-1.4.2-1.6-.1-.2-.3-.2-.6-.4Z"/>
+                    </svg>
+                  </span>
+                </span>
+                <span class="creator-platform-body">
+                  <strong>WhatsApp</strong>
+                  <small id="creatorPlatformWhatsappDesc">Chat langsung dengan creator</small>
+                </span>
+                <span class="creator-platform-arrow" aria-hidden="true">&#8250;</span>
+              </button>
+
+              <button class="creator-platform-card creator-platform-github" type="button" data-platform="github">
+                <span class="creator-platform-tooltip">
+                  <span class="creator-tooltip-profile">
+                    <span class="creator-tooltip-avatar">GH</span>
+                    <span class="creator-tooltip-meta">
+                      <strong>GitHub</strong>
+                      <small id="creatorPlatformGithubTooltip">Jelajahi code, build, dan kontribusi.</small>
+                    </span>
+                  </span>
+                </span>
+                <span class="creator-platform-layer">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span class="creator-platform-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 2C6.48 2 2 6.6 2 12.26c0 4.52 2.87 8.35 6.84 9.7.5.1.68-.23.68-.5v-1.78c-2.78.62-3.37-1.22-3.37-1.22-.45-1.2-1.12-1.51-1.12-1.51-.92-.65.07-.64.07-.64 1.02.08 1.56 1.08 1.56 1.08.9 1.58 2.36 1.13 2.94.86.09-.68.35-1.13.64-1.39-2.22-.26-4.55-1.15-4.55-5.13 0-1.14.4-2.07 1.05-2.8-.1-.27-.46-1.35.1-2.81 0 0 .85-.28 2.8 1.07A9.47 9.47 0 0 1 12 7.3c.85 0 1.7.12 2.5.37 1.94-1.35 2.79-1.07 2.79-1.07.56 1.46.21 2.54.1 2.81.66.73 1.05 1.66 1.05 2.8 0 3.99-2.34 4.86-4.58 5.12.36.32.68.95.68 1.92v2.85c0 .28.18.61.69.5A10.23 10.23 0 0 0 22 12.26C22 6.6 17.52 2 12 2Z"/>
+                    </svg>
+                  </span>
+                </span>
+                <span class="creator-platform-body">
+                  <strong>GitHub</strong>
+                  <small id="creatorPlatformGithubDesc">Lihat kode dan kontribusi</small>
+                </span>
+                <span class="creator-platform-arrow" aria-hidden="true">&#8250;</span>
+              </button>
+
+              <button class="creator-platform-card creator-platform-tiktok" type="button" data-platform="tiktok">
+                <span class="creator-platform-tooltip">
+                  <span class="creator-tooltip-profile">
+                    <span class="creator-tooltip-avatar">TT</span>
+                    <span class="creator-tooltip-meta">
+                      <strong>TikTok</strong>
+                      <small id="creatorPlatformTiktokTooltip">Cuplikan ide kreatif dan behind the build.</small>
+                    </span>
+                  </span>
+                </span>
+                <span class="creator-platform-layer">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span class="creator-platform-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M14.5 3c.45 1.65 1.43 2.98 2.94 3.8 1 .55 2.02.84 3.06.88v2.86a8.55 8.55 0 0 1-3.14-.62 9.13 9.13 0 0 1-2.35-1.35v6.35c0 1.47-.43 2.79-1.29 3.97C12.62 20.4 10.97 21 9.03 21c-1.5 0-2.8-.43-3.88-1.3C4.05 18.82 3.5 17.46 3.5 15.62c0-1.76.58-3.18 1.73-4.25 1.14-1.08 2.48-1.62 4-1.62.3 0 .6.02.9.07v3.02a3.76 3.76 0 0 0-.9-.1c-.71 0-1.3.25-1.77.74-.48.5-.72 1.16-.72 1.98 0 .8.22 1.45.67 1.93.45.48 1 .72 1.68.72.83 0 1.45-.3 1.88-.9.43-.61.64-1.42.64-2.43V3h2.89Z"/>
+                    </svg>
+                  </span>
+                </span>
+                <span class="creator-platform-body">
+                  <strong>TikTok</strong>
+                  <small id="creatorPlatformTiktokDesc">Tonton video dan konten kreatif</small>
+                </span>
+                <span class="creator-platform-arrow" aria-hidden="true">&#8250;</span>
+              </button>
+            </div>
+
+            <p id="creatorPlatformNote" class="creator-platform-note">Pilih platform yang paling sesuai untuk melihat aktivitas creator.</p>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="release-config.js"></script>
+  <script src="app-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+@echo off
+setlocal
+set "ROOT_DIR=%~dp0"
+
+if "%~1"=="" (
+  echo Gunakan: "%ROOT_DIR%verify-production-backend.bat" https://api.domain-anda.com
+  exit /b 1
+)
+
+powershell -ExecutionPolicy Bypass -File "%ROOT_DIR%backend\verify_public_backend.ps1" -ApiBaseUrl "%~1"
