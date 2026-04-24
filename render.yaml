@@ -14,18 +14,18 @@ services:
       sizeGB: 1
     envVars:
       - key: BYRONZ_LLM_PROVIDER
-        value: groq
+        value: openai_compatible
       - key: OPENAI_COMPATIBLE_BASE_URL
-        value: https://api.groq.com/openai/v1
+        value: https://api.llama.com/compat/v1/
       - key: OPENAI_COMPATIBLE_DEFAULT_MODEL
-        value: openai/gpt-oss-20b
+        value: meta-llama/llama-4-maverick-17b-128e-instruct
       - key: OPENAI_COMPATIBLE_MODELS
-        value: openai/gpt-oss-20b,llama-3.1-8b-instant,qwen/qwen3-32b,llama-3.3-70b-versatile
-      - key: OPENAI_COMPATIBLE_API_KEY
+        value: meta-llama/llama-4-maverick-17b-128e-instruct|Llama 4 Maverick,meta-llama/llama-4-scout-17b-16e-instruct|Llama 4 Scout
+      - key: LLAMA_API_KEY
         sync: false
       - key: BYRONZ_DB_PATH
         value: /var/data/chat.db
       - key: CORS_ALLOWED_ORIGINS
-        sync: false
+        value: capacitor://localhost,http://localhost,http://127.0.0.1
       - key: TRUSTED_HOSTS
-        sync: false
+        value: "*"
